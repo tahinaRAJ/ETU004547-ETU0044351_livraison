@@ -128,11 +128,11 @@ total bénéfices
 8️⃣ Pages attendues (minimum)
 📄 Page 1 : Gestion des livraisons
 
-créer une livraison
+📄 Page 2 :créer une livraison
 
-changer le statut (en attente → livré → annulé)
+📄 Page 3 :changer le statut (en attente → livré → annulé)
 
-📄 Page 2 : Liste des livraisons
+📄 Page 4 : Liste des livraisons
 
 colis
 
@@ -144,7 +144,7 @@ statut
 
 date
 
-📄 Page 3 : Bénéfices par période
+📄 Page 5 : Bénéfices par période
 
 filtre : jour / mois / année
 

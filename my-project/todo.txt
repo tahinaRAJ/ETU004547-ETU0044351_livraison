@@ -1,7 +1,7 @@
 Base : Mysql (qui : Tahina) (en cours)
     -base.sql : 
         -table :
-            -tb_livreurs
+            -liv_livreurs
                 id
 
                 nom
@@ -9,7 +9,7 @@ Base : Mysql (qui : Tahina) (en cours)
                 prenom
 
                 salaire_journalier
-            -tb_vehicules
+            -liv_vehicules
                 id
 
                 marque
@@ -17,20 +17,20 @@ Base : Mysql (qui : Tahina) (en cours)
                 modele
 
                 cout_journalier (carburant, entretien…)
-            -tb_zones
+            -liv_zones
                 id
 
                 nom_zone
 
                 type (entrepôt / destination)
-            -tb_colis
+            -liv_colis
                 id
 
                 poids_kg
 
                 cout_par_kg
 
-            -tb_affectations
+            -liv_affectations
                 id
 
                 livreur_id
@@ -39,7 +39,7 @@ Base : Mysql (qui : Tahina) (en cours)
 
                 date_affectation
                 
-            -tb_livraisons
+            -liv_livraisons
 
                 id
 
@@ -56,4 +56,26 @@ Base : Mysql (qui : Tahina) (en cours)
                 date_livraison
 
                 prix_facture_client
+
+
+
 Page : qui = Noah (en cours )
+    
+    index.php
+        lien vers bootstrap.php
+
+    Liste_livraisons.php:
+    
+    1. gestion_livraisons.php
+        - Créer une livraison
+
+        - Changer le statut (en attente / livré / annulé)
+
+    2. liste_livraisons.php
+
+        - Liste des livraisons (colis, livreur, véhicule, statut, date)
+
+    3. benefices_periode.php
+
+        - Bénéfices par période (filtre : jour / mois / année, tableau des bénéfices)
+
