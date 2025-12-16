@@ -1,1 +1,59 @@
-Base : 
+Base : Mysql (qui : Tahina) (en cours)
+    -base.sql : 
+        -table :
+            -tb_livreurs
+                id
+
+                nom
+
+                prenom
+
+                salaire_journalier
+            -tb_vehicules
+                id
+
+                marque
+
+                modele
+
+                cout_journalier (carburant, entretien…)
+            -tb_zones
+                id
+
+                nom_zone
+
+                type (entrepôt / destination)
+            -tb_colis
+                id
+
+                poids_kg
+
+                cout_par_kg
+
+            -tb_affectations
+                id
+
+                livreur_id
+
+                vehicule_id
+
+                date_affectation
+                
+            -tb_livraisons
+
+                id
+
+                colis_id
+
+                affectation_id
+
+                zone_depart_id
+
+                zone_arrivee_id
+
+                statut (en attente / livré / annulé)
+
+                date_livraison
+
+                prix_facture_client
+Page : qui = Noah (en cours )
