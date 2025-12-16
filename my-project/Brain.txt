@@ -1,0 +1,151 @@
+🔹 1. tb_livreurs
+
+id
+
+nom
+
+prenom
+
+salaire_journalier
+
+👉 Le salaire journalier est différent selon le livreur
+
+🔹 2. tb_vehicules
+
+id
+
+marque
+
+modele
+
+cout_journalier (carburant, entretien…)
+
+🔹 3. tb_zones (ou adresses)
+
+id
+
+nom_zone
+
+type (entrepôt / destination)
+
+🔹 4. tb_colis
+
+id
+
+poids_kg
+
+cout_par_kg
+
+👉 Le coût du colis dépend du poids
+
+🔹 5. tb_affectations
+
+(clé importante du sujet)
+
+id
+
+livreur_id
+
+vehicule_id
+
+date_affectation
+
+👉 Permet de dire :
+
+“Ce jour-là, ce livreur utilisait ce véhicule”
+
+🔹 6. tb_livraisons
+
+(table centrale)
+
+id
+
+colis_id
+
+affectation_id
+
+zone_depart_id
+
+zone_arrivee_id
+
+statut (en attente / livré / annulé)
+
+date_livraison
+
+prix_facture_client
+
+5️⃣ Calcul des coûts (logique métier)
+
+Pour une livraison, le coût de revient =
+
+coût véhicule (journalier)
++ salaire livreur (journalier)
++ (poids colis × coût par kg)
+
+
+👉 Ces valeurs viennent de :
+
+tb_vehicules
+
+tb_livreurs
+
+tb_colis
+
+6️⃣ Bénéfice
+bénéfice = prix_facture_client - coût_de_revient
+
+
+⚠️ Tu ne stockes PAS forcément le bénéfice
+👉 Tu le calcules en SQL (SUM, GROUP BY)
+
+7️⃣ Page demandée : bénéfices par période
+🔹 Périodes possibles
+
+par jour
+
+par mois
+
+par année
+
+Exemple logique SQL :
+
+DATE(date_livraison) → par jour
+
+MONTH(date_livraison) → par mois
+
+YEAR(date_livraison) → par année
+
+🔹 Colonnes affichées
+
+période
+
+total recettes
+
+total coûts
+
+total bénéfices
+
+8️⃣ Pages attendues (minimum)
+📄 Page 1 : Gestion des livraisons
+
+créer une livraison
+
+changer le statut (en attente → livré → annulé)
+
+📄 Page 2 : Liste des livraisons
+
+colis
+
+livreur
+
+véhicule
+
+statut
+
+date
+
+📄 Page 3 : Bénéfices par période
+
+filtre : jour / mois / année
+
+tableau des bénéfices
