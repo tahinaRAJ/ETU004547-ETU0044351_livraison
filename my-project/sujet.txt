@@ -1,30 +1,108 @@
-Examen – Décembre 2025
-Par groupe (binôme)
-Objectifs
-Conception de base de données, Requêtes SQL , Applications web
+Create database livraison;
+use livraison;
+-- Table des livreurs
+CREATE TABLE liv_livreurs (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	nom VARCHAR(50) NOT NULL,
+	prenom VARCHAR(50) NOT NULL,
+	salaire_journalier DECIMAL(10,2) NOT NULL
+);
 
-Technique
-PHP Flight mvc – Mysql ou Postgres
-Créer un Todo list  ( les tâches seront assignées pour chaque binôme)
+-- Table des véhicules
+CREATE TABLE liv_vehicules (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	marque VARCHAR(50) NOT NULL,
+	modele VARCHAR(50) NOT NULL,
+	cout_journalier DECIMAL(10,2) NOT NULL
+);
 
-Compréhension
-Une société de livraison possède plusieurs véhicules, livreurs et zones de livraison.
-Un livreur est affecté à un véhicule par jour.
-Chaque livraison correspond à :
-	•	un colis,
-	•	une adresse de départ (entrepôt),
-	•	une adresse de destination,
-	•	un statut (en attente, livré, annulé).
+-- Table des zones (adresses)
+CREATE TABLE liv_zones (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	nom_zone VARCHAR(100) NOT NULL,
+	type ENUM('entrepôt', 'destination') NOT NULL
+);
 
-Votre tâche est de créer la base de données, d’insérer des données de test, et d’effectuer les requêtes SQL nécessaires.
+-- Table des colis
+CREATE TABLE liv_colis (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	poids_kg DECIMAL(10,2) NOT NULL,
+	cout_par_kg DECIMAL(10,2) NOT NULL
+);
 
-Travail à faire
-Créer les tables et données nécessaires qui permettent de gérer les fonctionnalités :
-Gestion des livraisons (Création , Statut)
-les colis correspondants
-Paramètre par livraison
-cout de revient ( voiture + chauffeur (salaire journalier différent)
-colis par kg)
-Créer directement les autres données nécessaires dans la table
-Page pour afficher les bénéfices par période (jour, mois, année)
+-- Table des affectations
+CREATE TABLE liv_affectations (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	livreur_id INT NOT NULL,
+	vehicule_id INT NOT NULL,
+	date_affectation DATE NOT NULL,
+	FOREIGN KEY (livreur_id) REFERENCES liv_livreurs(id),
+	FOREIGN KEY (vehicule_id) REFERENCES liv_vehicules(id)
+);
 
+-- Table des livraisons
+CREATE TABLE liv_livraisons (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	colis_id INT NOT NULL,
+	affectation_id INT NOT NULL,
+	zone_depart_id INT NOT NULL,
+	zone_arrivee_id INT NOT NULL,
+	statut ENUM('en attente', 'livré', 'annulé') NOT NULL,
+	date_livraison DATE NOT NULL,
+	prix_facture_client DECIMAL(10,2) NOT NULL,
+	FOREIGN KEY (colis_id) REFERENCES liv_colis(id),
+	FOREIGN KEY (affectation_id) REFERENCES liv_affectations(id),
+	FOREIGN KEY (zone_depart_id) REFERENCES liv_zones(id),
+	FOREIGN KEY (zone_arrivee_id) REFERENCES liv_zones(id)
+);
+
+-- Vue : coût de revient d'une livraison
+CREATE OR REPLACE VIEW v_livraison_cout AS
+SELECT l.id AS livraison_id,
+	   l.prix_facture_client,
+	   v.cout_journalier,
+	   lv.salaire_journalier,
+	   c.poids_kg, c.cout_par_kg,
+	   (v.cout_journalier + lv.salaire_journalier + (c.poids_kg * c.cout_par_kg)) AS cout_de_revient
+FROM liv_livraisons l
+JOIN liv_colis c ON l.colis_id = c.id
+JOIN liv_affectations a ON l.affectation_id = a.id
+JOIN liv_livreurs lv ON a.livreur_id = lv.id
+JOIN liv_vehicules v ON a.vehicule_id = v.id;
+
+-- Vue : bénéfice par livraison
+CREATE OR REPLACE VIEW v_livraison_benefice AS
+SELECT livraison_id,
+	   prix_facture_client,
+	   cout_de_revient,
+	   (prix_facture_client - cout_de_revient) AS benefice
+FROM v_livraison_cout;
+
+-- Vue : bénéfices par période (jour, mois, année)
+CREATE OR REPLACE VIEW v_benefices_par_jour AS
+SELECT DATE(l.date_livraison) AS periode,
+	   SUM(l.prix_facture_client) AS total_recettes,
+	   SUM(vc.cout_de_revient) AS total_couts,
+	   SUM(l.prix_facture_client - vc.cout_de_revient) AS total_benefices
+FROM liv_livraisons l
+JOIN v_livraison_cout vc ON l.id = vc.livraison_id
+GROUP BY DATE(l.date_livraison);
+
+CREATE OR REPLACE VIEW v_benefices_par_mois AS
+SELECT CONCAT(YEAR(l.date_livraison), '-', LPAD(MONTH(l.date_livraison),2,'0')) AS periode,
+	   SUM(l.prix_facture_client) AS total_recettes,
+	   SUM(vc.cout_de_revient) AS total_couts,
+	   SUM(l.prix_facture_client - vc.cout_de_revient) AS total_benefices
+FROM liv_livraisons l
+JOIN v_livraison_cout vc ON l.id = vc.livraison_id
+GROUP BY YEAR(l.date_livraison), MONTH(l.date_livraison);
+
+CREATE OR REPLACE VIEW v_benefices_par_annee AS
+SELECT YEAR(l.date_livraison) AS periode,
+	   SUM(l.prix_facture_client) AS total_recettes,
+	   SUM(vc.cout_de_revient) AS total_couts,
+	   SUM(l.prix_facture_client - vc.cout_de_revient) AS total_benefices
+FROM liv_livraisons l
+JOIN v_livraison_cout vc ON l.id = vc.livraison_id
+GROUP BY YEAR(l.date_livraison);
+change 

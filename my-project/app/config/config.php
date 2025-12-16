@@ -79,7 +79,6 @@ return [
 		'password' => '',
 		// SQLite Example:
 		// 'file_path' => __DIR__ . $ds . '..' . $ds . 'database.sqlite', // Path to SQLite file
-		
 	],
 
 	// Google OAuth Credentials

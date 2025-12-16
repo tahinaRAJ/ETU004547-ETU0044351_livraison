@@ -5,15 +5,16 @@ CREATE TABLE liv_livreurs (
 	id INT PRIMARY KEY AUTO_INCREMENT,
 	nom VARCHAR(50) NOT NULL,
 	prenom VARCHAR(50) NOT NULL,
-	salaire_journalier DECIMAL(10,2) NOT NULL
+	salaire_par_livraison DECIMAL(10,2) NOT NULL
 );
+
 
 -- Table des véhicules
 CREATE TABLE liv_vehicules (
 	id INT PRIMARY KEY AUTO_INCREMENT,
 	marque VARCHAR(50) NOT NULL,
 	modele VARCHAR(50) NOT NULL,
-	cout_journalier DECIMAL(10,2) NOT NULL
+	cout_par_livraison DECIMAL(10,2) NOT NULL
 );
 
 -- Table des zones (adresses)
@@ -44,31 +45,41 @@ CREATE TABLE liv_affectations (
 CREATE TABLE liv_livraisons (
 	id INT PRIMARY KEY AUTO_INCREMENT,
 	colis_id INT NOT NULL,
-	affectation_id INT NOT NULL,
+	livreur_id INT NOT NULL,
+	vehicule_id INT NOT NULL,
 	zone_depart_id INT NOT NULL,
 	zone_arrivee_id INT NOT NULL,
 	statut ENUM('en attente', 'livré', 'annulé') NOT NULL,
 	date_livraison DATE NOT NULL,
 	prix_facture_client DECIMAL(10,2) NOT NULL,
+
 	FOREIGN KEY (colis_id) REFERENCES liv_colis(id),
-	FOREIGN KEY (affectation_id) REFERENCES liv_affectations(id),
+	FOREIGN KEY (livreur_id) REFERENCES liv_livreurs(id),
+	FOREIGN KEY (vehicule_id) REFERENCES liv_vehicules(id),
 	FOREIGN KEY (zone_depart_id) REFERENCES liv_zones(id),
 	FOREIGN KEY (zone_arrivee_id) REFERENCES liv_zones(id)
 );
 
+
 -- Vue : coût de revient d'une livraison
 CREATE OR REPLACE VIEW v_livraison_cout AS
-SELECT l.id AS livraison_id,
-	   l.prix_facture_client,
-	   v.cout_journalier,
-	   lv.salaire_journalier,
-	   c.poids_kg, c.cout_par_kg,
-	   (v.cout_journalier + lv.salaire_journalier + (c.poids_kg * c.cout_par_kg)) AS cout_de_revient
+SELECT 
+	l.id AS livraison_id,
+	l.prix_facture_client,
+	v.cout_par_livraison,
+	lv.salaire_par_livraison,
+	c.poids_kg,
+	c.cout_par_kg,
+	(
+		v.cout_par_livraison
+		+ lv.salaire_par_livraison
+		+ (c.poids_kg * c.cout_par_kg)
+	) AS cout_de_revient
 FROM liv_livraisons l
 JOIN liv_colis c ON l.colis_id = c.id
-JOIN liv_affectations a ON l.affectation_id = a.id
-JOIN liv_livreurs lv ON a.livreur_id = lv.id
-JOIN liv_vehicules v ON a.vehicule_id = v.id;
+JOIN liv_livreurs lv ON l.livreur_id = lv.id
+JOIN liv_vehicules v ON l.vehicule_id = v.id;
+
 
 -- Vue : bénéfice par livraison
 CREATE OR REPLACE VIEW v_livraison_benefice AS
