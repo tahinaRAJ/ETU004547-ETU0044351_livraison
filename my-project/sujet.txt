@@ -24,7 +24,7 @@ Gestion des livraisons (Création , Statut)
 les colis correspondants
 Paramètre par livraison
 cout de revient ( voiture + chauffeur (salaire journalier différent)
-colis par kg
+colis par kg)
 Créer directement les autres données nécessaires dans la table
 Page pour afficher les bénéfices par période (jour, mois, année)
 

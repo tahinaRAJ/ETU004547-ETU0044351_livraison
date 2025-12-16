@@ -64,7 +64,6 @@ Page : qui = Noah (en cours )
     index.php
         lien vers bootstrap.php
 
-    Liste_livraisons.php:
     
     1. gestion_livraisons.php
         - Créer une livraison
@@ -75,7 +74,27 @@ Page : qui = Noah (en cours )
 
         - Liste des livraisons (colis, livreur, véhicule, statut, date)
 
-    3. benefices_periode.php
 
+    3. benefices_periode.php
         - Bénéfices par période (filtre : jour / mois / année, tableau des bénéfices)
+
+Model :
+    - LivreurModele
+        getLiveur()
+
+    - VehiculeModele
+        getVehicule() 
+
+    - ZoneModele 
+        getZone()
+
+    - ColisModele
+        getColis() 
+
+    - AffectationModele
+        getAffectation
+
+    - LivraisonModele
+        getLivraison
+
 
