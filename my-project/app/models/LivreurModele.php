@@ -8,12 +8,12 @@ class LivreurModele {
     public function __construct($db) {
         $this->db = $db;
     }
-    public function getChauffeurs() {
-        $stmt = $this->db->runQuery("SELECT * FROM tb_chauffeurs");
+    public function getLivreurs() {
+        $stmt = $this->db->runQuery("SELECT * FROM liv_livreurs");
         return $stmt->fetchAll();
     }
-    public function getChauffeursById($id) {
-        $stmt = $this->db->runQuery("SELECT * FROM tb_chauffeurs WHERE id = ?", [ $id ]);
+    public function getLivreursById($id) {
+        $stmt = $this->db->runQuery("SELECT * FROM liv_livreurs WHERE id = ?", [ $id ]);
         return $stmt->fetchAll();
     }
 }

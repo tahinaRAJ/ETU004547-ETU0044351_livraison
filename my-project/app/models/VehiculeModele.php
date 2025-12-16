@@ -9,11 +9,11 @@ class VehiculeModele {
         $this->db = $db;
     }
     public function getvoiture() {
-        $stmt = $this->db->runQuery("SELECT * FROM tb_vehicules");
+        $stmt = $this->db->runQuery("SELECT * FROM liv_vehicules");
         return $stmt->fetchAll();
     }
-    public function getTelephonebyid($id) {
-        $stmt = $this->db->runQuery("SELECT * FROM tb_vehicules WHERE id = ?", [ $id ]);
+    public function getVoiturebyid($id) {
+        $stmt = $this->db->runQuery("SELECT * FROM liv_vehicules WHERE id = ?", [ $id ]);
         return $stmt->fetchAll();
     }
 
