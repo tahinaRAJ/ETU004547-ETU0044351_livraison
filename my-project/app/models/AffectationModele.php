@@ -2,22 +2,20 @@
 namespace app\models;
 use Flight;
 
-class Parametres_salaireModele {
+class AffectationModele {
     private $db;
 
     public function __construct($db) {
         $this->db = $db;
     }
     public function getParametres_salaire() {
-        $stmt = $this->db->runQuery("SELECT * FROM tb_parametres_salaire");
+        $stmt = $this->db->runQuery("SELECT * FROM liv_affectations");
         return $stmt->fetchAll();
     }
     public function getParametres_salaireById($id) {
-        $stmt = $this->db->runQuery("SELECT * FROM tb_parametres_salaire WHERE id = ?", [ $id ]);
+        $stmt = $this->db->runQuery("SELECT * FROM liv_affectations WHERE id = ?", [ $id ]);
         return $stmt->fetchAll();
     }
-    public function getrentable(){
-        
-    }
+    
 }
 ?>
