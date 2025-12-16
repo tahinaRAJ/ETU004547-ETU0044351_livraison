@@ -1,0 +1,120 @@
+Base.sql qui :(tahina) (ok)
+    -table voiture qui :(tahina) (ok)
+        id 
+        modele
+        versemmentMin
+
+    -table chauffeur qui :(tahina) (ok)
+        id
+        nom
+
+    -table trajet qui :(tahina) (ok)
+        id
+        pointA
+        pointB
+        idChauffeur
+        idTrajet
+        idVoiture
+        DateDepart
+        DateArrivée
+        DistanceParcourue
+        MontantRecette
+        MontantCarburant
+        taux
+        SalaireChauffeur
+
+
+    -table pannes qui :(tahina) (ok)
+        id
+        idVoiture
+        dateDebut
+        dateFin
+        description
+    
+    -parametreSal qui :(tahina) (ok)
+        id
+        tauxBas
+        tauxHaut
+        dateDebut
+
+
+page : qui : (Noah) (en cours)
+    index.php :(Noah)(ok)
+        - liens qui va vers bootstrap.php 
+    bootstrap.php : qui : (Noah) (en cours)
+        - liens qui va vers routes.php
+    routes.php : qui : (Noah) (en cours)
+        liens vers les routes des view 
+    VIEW : 
+        liste.php : qui : (Noah) (en cours)
+            -liste des voitures et des chauffeurs par jour 
+        Benefice_Total.php : qui : (Noah) (en cours)
+            - benefice total par jours 
+        Benefice_vehicule.php : qui : (Noah) (en cours)
+            - benefice total par vehicule
+        Trajets_Rentables.php : qui : (Noah) (en cours)
+            - liste des trajets les plus rentables par jour
+        Voiture.php : qui : (Noah) (en cours)
+            -liste des voiture qui ne sont pas en panne 
+        Taux_panne.php : qui : (Noah) (en cours)
+            - Affiche vehicule et %panne 
+        Salaire_chauffeurs : qui : (Noah) (en cours)
+            - Affiche les salaire des chauffeurs
+        Formulaire_Trajets.php : qui : (Noah) (en cours)
+            -Formulaire de creation d'un trajet
+
+Modele : qui : (Noah) (ok)
+    VoitureModele.php : qui : (Noah) (ok)
+        -private $db (connection database)
+        - function : 
+            getAll() : 
+            getbyID() : 
+            getRentable() : 
+    ChauffeurModele.php : qui : (Noah) (ok)
+        -private $db (connection database)
+        -function : 
+            
+    TrajetModele.php : qui : (Noah) (ok)
+        -private $db (connection database)
+        - function
+            create()
+            getAll()
+    PanneModele.php : qui : (Noah) (ok)
+        -private $db (connection database)
+        - function 
+    Parametres_salaireModele.php : qui : (Noah) (ok)
+        -private $db (connection database)
+        - function 
+
+
+
+Controller : qui : (Tahina) (en cours)
+    ListeApiController.php :
+        function : 
+            getAll()
+    FormulaireApiController.php :
+        function : 
+            getAll()
+    SalaireChauffeurApiController.php :
+        function : 
+            getAll()
+    BeneficeApiController.php :
+        function : 
+            getAll()
+    VoitureApiController.php : qui : (Tahina) (en cours)
+        function : 
+            getAll()
+    ChauffeurApiController.php : qui : (Tahina) (en cours)
+        function : 
+            getAll()
+    TrajetApiController.php : qui : (Tahina) (en cours)
+        function : 
+            getAll()
+    PanneApiController.php : qui : (Tahina) (en cours)
+        function : 
+            getAll()
+    Parametres_salaireApiController.php : qui : (Tahina) (en cours)
+        function : 
+            getAll()
+
+    
