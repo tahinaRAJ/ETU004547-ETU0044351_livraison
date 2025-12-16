@@ -1,227 +1,107 @@
-CREATE DATABASE IF NOT EXISTS taxi_be;
-USE taxi_be;
-
-
--- Table véhicules
-CREATE TABLE tb_vehicules (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    marque VARCHAR(50),
-    modele VARCHAR(50),
-    versement_minimum DECIMAL(10,2) DEFAULT 50.00
+Create database livraison;
+use livraison;
+-- Table des livreurs
+CREATE TABLE liv_livreurs (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	nom VARCHAR(50) NOT NULL,
+	prenom VARCHAR(50) NOT NULL,
+	salaire_journalier DECIMAL(10,2) NOT NULL
 );
 
--- Table chauffeurs
-CREATE TABLE tb_chauffeurs (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nom VARCHAR(50) NOT NULL,
-    prenom VARCHAR(50) NOT NULL
+-- Table des véhicules
+CREATE TABLE liv_vehicules (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	marque VARCHAR(50) NOT NULL,
+	modele VARCHAR(50) NOT NULL,
+	cout_journalier DECIMAL(10,2) NOT NULL
 );
 
--- Table trajets
-CREATE TABLE tb_trajets (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    vehicule_id INT,
-    chauffeur_id INT,
-    point_depart VARCHAR(100),
-    point_arrivee VARCHAR(100),
-    date_heure_debut DATETIME,
-    date_heure_fin DATETIME,
-    distance_km DECIMAL(10,2),
-    montant_recette DECIMAL(10,2),
-    montant_carburant DECIMAL(10,2),
-    taux_utilise DECIMAL(5,2),      
-    salaire_chauffeur DECIMAL(10,2),
-    FOREIGN KEY (vehicule_id) REFERENCES tb_vehicules(id),
-    FOREIGN KEY (chauffeur_id) REFERENCES tb_chauffeurs(id)
+-- Table des zones (adresses)
+CREATE TABLE liv_zones (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	nom_zone VARCHAR(100) NOT NULL,
+	type ENUM('entrepôt', 'destination') NOT NULL
 );
 
--- Table pannes
-CREATE TABLE tb_pannes (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    vehicule_id INT,
-    date_debut_panne DATE NOT NULL,
-    date_fin_panne DATE,
-    description TEXT,
-    FOREIGN KEY (vehicule_id) REFERENCES tb_vehicules(id)
+-- Table des colis
+CREATE TABLE liv_colis (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	poids_kg DECIMAL(10,2) NOT NULL,
+	cout_par_kg DECIMAL(10,2) NOT NULL
 );
 
--- Table paramètres salaire (pourcentage modifiable)
-CREATE TABLE tb_parametres_salaire (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  taux_bas DECIMAL(5,2) DEFAULT 0.08,
-  taux_haut DECIMAL(5,2) DEFAULT 0.25,
-  date_debut DATE DEFAULT (CURRENT_DATE)
+-- Table des affectations
+CREATE TABLE liv_affectations (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	livreur_id INT NOT NULL,
+	vehicule_id INT NOT NULL,
+	date_affectation DATE NOT NULL,
+	FOREIGN KEY (livreur_id) REFERENCES liv_livreurs(id),
+	FOREIGN KEY (vehicule_id) REFERENCES liv_vehicules(id)
 );
 
-DROP VIEW IF EXISTS vue_benefice_par_vehicule;
-CREATE VIEW vue_benefice_par_vehicule AS
-SELECT 
-    v.id AS vehicule_id,
-    v.marque,
-    v.modele,
-    SUM(t.montant_recette - t.montant_carburant) AS total_benefice
-FROM tb_trajets t
-JOIN tb_vehicules v ON v.id = t.vehicule_id
-GROUP BY v.id, v.marque, v.modele;
-
-DROP VIEW IF EXISTS vue_benefice_par_jour;
-CREATE VIEW vue_benefice_par_jour AS
-SELECT 
-    DATE(t.date_heure_debut) AS jour,
-    SUM(t.montant_recette - t.montant_carburant) AS total_benefice
-FROM tb_trajets t
-GROUP BY jour;
-
-DROP VIEW IF EXISTS vue_trajets_par_jour;
-CREATE VIEW vue_trajets_par_jour AS
-SELECT 
-    DATE(t.date_heure_debut) AS jour,
-    CONCAT(c.nom, ' ', c.prenom) AS chauffeur,
-    v.id AS vehicule_id,
-    v.marque,
-    v.modele,
-    SUM(t.distance_km) AS km_total,
-    SUM(t.montant_recette) AS total_recette,
-    SUM(t.montant_carburant) AS total_carburant
-FROM tb_trajets t
-JOIN tb_vehicules v ON v.id = t.vehicule_id
-JOIN tb_chauffeurs c ON c.id = t.chauffeur_id
-GROUP BY 
-    jour,
-    chauffeur,
-    v.id,
-    v.marque,
-    v.modele;
-
-DROP VIEW IF EXISTS vue_trajet_rentable_par_jour;
-CREATE VIEW vue_trajet_rentable_par_jour AS
-SELECT 
-    t.id AS trajet_id,
-    DATE(t.date_heure_debut) AS jour,
-    CONCAT(c.nom, ' ', c.prenom) AS chauffeur,
-    v.id AS vehicule_id,
-    v.marque,
-    v.modele,
-    t.point_depart,
-    t.point_arrivee,
-    t.distance_km,
-    t.montant_recette,
-    t.montant_carburant,
-    (t.montant_recette - t.montant_carburant) AS benefice
-FROM tb_trajets t
-JOIN tb_vehicules v ON v.id = t.vehicule_id
-JOIN tb_chauffeurs c ON c.id = t.chauffeur_id
-WHERE (t.montant_recette - t.montant_carburant) = (
-    SELECT MAX(t2.montant_recette - t2.montant_carburant)
-    FROM tb_trajets t2
-    WHERE DATE(t2.date_heure_debut) = DATE(t.date_heure_debut)
+-- Table des livraisons
+CREATE TABLE liv_livraisons (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	colis_id INT NOT NULL,
+	affectation_id INT NOT NULL,
+	zone_depart_id INT NOT NULL,
+	zone_arrivee_id INT NOT NULL,
+	statut ENUM('en attente', 'livré', 'annulé') NOT NULL,
+	date_livraison DATE NOT NULL,
+	prix_facture_client DECIMAL(10,2) NOT NULL,
+	FOREIGN KEY (colis_id) REFERENCES liv_colis(id),
+	FOREIGN KEY (affectation_id) REFERENCES liv_affectations(id),
+	FOREIGN KEY (zone_depart_id) REFERENCES liv_zones(id),
+	FOREIGN KEY (zone_arrivee_id) REFERENCES liv_zones(id)
 );
 
-DROP VIEW IF EXISTS vue_voitures_disponibles;
-CREATE VIEW vue_voitures_disponibles AS
-SELECT 
-    v.id AS vehicule_id,
-    v.marque,
-    v.modele,
-    v.versement_minimum
-FROM tb_vehicules v
-WHERE NOT EXISTS (
-    SELECT 1 FROM tb_pannes p
-    WHERE p.vehicule_id = v.id
-      AND p.date_debut_panne <= CURDATE()
-      AND (p.date_fin_panne IS NULL OR p.date_fin_panne >= CURDATE())
-);
+-- Vue : coût de revient d'une livraison
+CREATE OR REPLACE VIEW v_livraison_cout AS
+SELECT l.id AS livraison_id,
+	   l.prix_facture_client,
+	   v.cout_journalier,
+	   lv.salaire_journalier,
+	   c.poids_kg, c.cout_par_kg,
+	   (v.cout_journalier + lv.salaire_journalier + (c.poids_kg * c.cout_par_kg)) AS cout_de_revient
+FROM liv_livraisons l
+JOIN liv_colis c ON l.colis_id = c.id
+JOIN liv_affectations a ON l.affectation_id = a.id
+JOIN liv_livreurs lv ON a.livreur_id = lv.id
+JOIN liv_vehicules v ON a.vehicule_id = v.id;
 
--- Table véhicules
-DROP TABLE tb_vehicules ;
+-- Vue : bénéfice par livraison
+CREATE OR REPLACE VIEW v_livraison_benefice AS
+SELECT livraison_id,
+	   prix_facture_client,
+	   cout_de_revient,
+	   (prix_facture_client - cout_de_revient) AS benefice
+FROM v_livraison_cout;
 
--- Table chauffeurs
-DROP TABLE tb_chauffeurs;
+-- Vue : bénéfices par période (jour, mois, année)
+CREATE OR REPLACE VIEW v_benefices_par_jour AS
+SELECT DATE(l.date_livraison) AS periode,
+	   SUM(l.prix_facture_client) AS total_recettes,
+	   SUM(vc.cout_de_revient) AS total_couts,
+	   SUM(l.prix_facture_client - vc.cout_de_revient) AS total_benefices
+FROM liv_livraisons l
+JOIN v_livraison_cout vc ON l.id = vc.livraison_id
+GROUP BY DATE(l.date_livraison);
 
--- Table trajets
-DROP TABLE tb_trajets;
+CREATE OR REPLACE VIEW v_benefices_par_mois AS
+SELECT CONCAT(YEAR(l.date_livraison), '-', LPAD(MONTH(l.date_livraison),2,'0')) AS periode,
+	   SUM(l.prix_facture_client) AS total_recettes,
+	   SUM(vc.cout_de_revient) AS total_couts,
+	   SUM(l.prix_facture_client - vc.cout_de_revient) AS total_benefices
+FROM liv_livraisons l
+JOIN v_livraison_cout vc ON l.id = vc.livraison_id
+GROUP BY YEAR(l.date_livraison), MONTH(l.date_livraison);
 
--- Table pannes
-DROP table tb_pannes ;
- 
--- Table paramètres salaire (pourcentage modifiable)
-DROP  table tb_parametres_salaire;
-
-DROP VIEW IF EXISTS vue_benefice_par_vehicule;
-CREATE VIEW vue_benefice_par_vehicule AS
-SELECT 
-    v.id AS vehicule_id,
-    v.marque,
-    v.modele,
-    SUM(t.montant_recette - t.montant_carburant) AS total_benefice
-FROM tb_trajets t
-JOIN tb_vehicules v ON v.id = t.vehicule_id
-GROUP BY v.id, v.marque, v.modele;
-
-DROP VIEW IF EXISTS vue_benefice_par_jour;
-CREATE VIEW vue_benefice_par_jour AS
-SELECT 
-    DATE(t.date_heure_debut) AS jour,
-    SUM(t.montant_recette - t.montant_carburant) AS total_benefice
-FROM tb_trajets t
-GROUP BY jour;
-
-DROP VIEW IF EXISTS vue_trajets_par_jour;
-CREATE VIEW vue_trajets_par_jour AS
-SELECT 
-    DATE(t.date_heure_debut) AS jour,
-    CONCAT(c.nom, ' ', c.prenom) AS chauffeur,
-    v.id AS vehicule_id,
-    v.marque,
-    v.modele,
-    SUM(t.distance_km) AS km_total,
-    SUM(t.montant_recette) AS total_recette,
-    SUM(t.montant_carburant) AS total_carburant
-FROM tb_trajets t
-JOIN tb_vehicules v ON v.id = t.vehicule_id
-JOIN tb_chauffeurs c ON c.id = t.chauffeur_id
-GROUP BY 
-    jour,
-    chauffeur,
-    v.id,
-    v.marque,
-    v.modele;
-
-DROP VIEW IF EXISTS vue_trajet_rentable_par_jour;
-CREATE VIEW vue_trajet_rentable_par_jour AS
-SELECT 
-    t.id AS trajet_id,
-    DATE(t.date_heure_debut) AS jour,
-    CONCAT(c.nom, ' ', c.prenom) AS chauffeur,
-    v.id AS vehicule_id,
-    v.marque,
-    v.modele,
-    t.point_depart,
-    t.point_arrivee,
-    t.distance_km,
-    t.montant_recette,
-    t.montant_carburant,
-    (t.montant_recette - t.montant_carburant) AS benefice
-FROM tb_trajets t
-JOIN tb_vehicules v ON v.id = t.vehicule_id
-JOIN tb_chauffeurs c ON c.id = t.chauffeur_id
-WHERE (t.montant_recette - t.montant_carburant) = (
-    SELECT MAX(t2.montant_recette - t2.montant_carburant)
-    FROM tb_trajets t2
-    WHERE DATE(t2.date_heure_debut) = DATE(t.date_heure_debut)
-);
-
-DROP VIEW IF EXISTS vue_voitures_disponibles;
-CREATE VIEW vue_voitures_disponibles AS
-SELECT 
-    v.id AS vehicule_id,
-    v.marque,
-    v.modele,
-    v.versement_minimum
-FROM tb_vehicules v
-WHERE NOT EXISTS (
-    SELECT 1 FROM tb_pannes p
-    WHERE p.vehicule_id = v.id
-      AND p.date_debut_panne <= CURDATE()
-      AND (p.date_fin_panne IS NULL OR p.date_fin_panne >= CURDATE())
-);
+CREATE OR REPLACE VIEW v_benefices_par_annee AS
+SELECT YEAR(l.date_livraison) AS periode,
+	   SUM(l.prix_facture_client) AS total_recettes,
+	   SUM(vc.cout_de_revient) AS total_couts,
+	   SUM(l.prix_facture_client - vc.cout_de_revient) AS total_benefices
+FROM liv_livraisons l
+JOIN v_livraison_cout vc ON l.id = vc.livraison_id
+GROUP BY YEAR(l.date_livraison);

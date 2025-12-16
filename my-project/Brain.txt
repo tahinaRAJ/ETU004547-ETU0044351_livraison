@@ -1,4 +1,4 @@
-🔹 1. tb_livreurs
+🔹 1. liv_livreurs
 
 id
 
@@ -10,7 +10,7 @@ salaire_journalier
 
 👉 Le salaire journalier est différent selon le livreur
 
-🔹 2. tb_vehicules
+🔹 2. liv_vehicules
 
 id
 
@@ -20,7 +20,7 @@ modele
 
 cout_journalier (carburant, entretien…)
 
-🔹 3. tb_zones (ou adresses)
+🔹 3. liv_zones (ou adresses)
 
 id
 
@@ -28,7 +28,7 @@ nom_zone
 
 type (entrepôt / destination)
 
-🔹 4. tb_colis
+🔹 4. liv_colis
 
 id
 
@@ -38,7 +38,7 @@ cout_par_kg
 
 👉 Le coût du colis dépend du poids
 
-🔹 5. tb_affectations
+🔹 5. liv_affectations
 
 (clé importante du sujet)
 
@@ -54,7 +54,7 @@ date_affectation
 
 “Ce jour-là, ce livreur utilisait ce véhicule”
 
-🔹 6. tb_livraisons
+🔹 6. liv_livraisons
 
 (table centrale)
 
@@ -85,11 +85,11 @@ coût véhicule (journalier)
 
 👉 Ces valeurs viennent de :
 
-tb_vehicules
+liv_vehicules
 
-tb_livreurs
+liv_livreurs
 
-tb_colis
+liv_colis
 
 6️⃣ Bénéfice
 bénéfice = prix_facture_client - coût_de_revient

@@ -1,36 +1,67 @@
+-- Insertion des données dans les tables
+-- Livreurs
+INSERT INTO liv_livreurs (nom, prenom, salaire_journalier) VALUES
+('Rakoto', 'Noah', 20000.00),
+('Rabe', 'Lala', 18000.00),
+('Andri', 'Tiana', 22000.00),
+('Rasoa', 'Micka', 21000.00),
+('Raharinirina', 'Hery', 19500.00),
+('Ando', 'Mamy', 20500.00);
+
 -- Véhicules
-INSERT INTO tb_vehicules (marque, modele, versement_minimum)
-VALUES 
-('Toyota', 'Hiace', 50.00),
-('Hyundai', 'H1', 45.00),
-('Mercedes', 'Sprinter', 60.00);
--- Chauffeurs
-INSERT INTO tb_chauffeurs (nom, prenom)
-VALUES
-('Rakoto', 'Noah'),
-('Rabe', 'Lala'),
-('Andri', 'Tiana');
+INSERT INTO liv_vehicules (marque, modele, cout_journalier) VALUES
+('Toyota', 'Hiace', 35000.00),
+('Hyundai', 'H1', 32000.00),
+('Mercedes', 'Sprinter', 40000.00),
+('Ford', 'Transit', 37000.00),
+('Nissan', 'Urvan', 33000.00),
+('Renault', 'Master', 34000.00);
 
--- Paramètres salaire
-INSERT INTO tb_parametres_salaire (taux_bas, taux_haut)
-VALUES
-(0.08, 0.25);
+-- Zones
+INSERT INTO liv_zones (nom_zone, type) VALUES
+('Andoharanofotsy', 'entrepôt'),
+('Ambohibao', 'destination'),
+('Analakely', 'entrepôt'),
+('Soarano', 'destination'),
+('Ivandry', 'entrepôt'),
+('Ankorondrano', 'destination'),
+('Itaosy', 'entrepôt'),
+('Anosy', 'destination'),
+('Analamahitsy', 'entrepôt'),
+('67Ha', 'destination'),
+('Ampefiloha', 'entrepôt'),
+('Ivato', 'destination'),
+('Ankadimbahoaka', 'entrepôt'),
+('Ambodivona', 'destination'),
+('Ankorahotra', 'entrepôt'),
+('Ambatoroka', 'entrepôt');
 
--- Pannes
-INSERT INTO tb_pannes (vehicule_id, date_debut_panne, date_fin_panne, description)
-VALUES
-(1, '2025-12-05', '2025-12-07', 'Problème moteur'),
-(2, '2025-12-10', NULL, 'Panne en cours');
+-- Colis
+INSERT INTO liv_colis (poids_kg, cout_par_kg) VALUES
+(10.5, 1500.00),
+(7.2, 1200.00),
+(15.0, 1800.00),
+(5.5, 1000.00),
+(12.0, 1600.00),
+(8.8, 1300.00);
 
--- Trajets
-INSERT INTO tb_trajets (vehicule_id, chauffeur_id, point_depart, point_arrivee, date_heure_debut, date_heure_fin, distance_km, montant_recette, montant_carburant, taux_utilise, salaire_chauffeur)
-VALUES
-(1, 1, 'Andoharanofotsy', 'Ambohibao', '2025-12-08 08:00:00', '2025-12-08 09:00:00', 12.5, 50.00, 10.00, 0.25, 12.50),
-(2, 2, 'Analakely', 'Soarano', '2025-12-08 09:30:00', '2025-12-08 10:15:00', 8.0, 40.00, 8.00, 0.08, 3.20),
-(3, 3, 'Ivandry', 'Ankorondrano', '2025-12-08 10:30:00', '2025-12-08 11:00:00', 5.0, 60.00, 12.00, 0.25, 15.00);
+-- Affectations
+INSERT INTO liv_affectations (livreur_id, vehicule_id, date_affectation) VALUES
+(1, 1, '2025-12-08'),
+(2, 2, '2025-12-08'),
+(3, 3, '2025-12-08'),
+(4, 4, '2025-12-09'),
+(5, 5, '2025-12-09'),
+(6, 6, '2025-12-10');
 
--- Véhicules supplémentaires
-INSERT INTO tb_vehicules (marque, modele, versement_minimum)
+-- Livraisons
+INSERT INTO liv_livraisons (colis_id, affectation_id, zone_depart_id, zone_arrivee_id, statut, date_livraison, prix_facture_client) VALUES
+(1, 1, 1, 2, 'livré', '2025-12-08', 80000.00),
+(2, 2, 3, 4, 'livré', '2025-12-08', 60000.00),
+(3, 3, 5, 6, 'livré', '2025-12-08', 95000.00),
+(4, 4, 7, 8, 'livré', '2025-12-09', 50000.00),
+(5, 5, 9, 10, 'livré', '2025-12-09', 75000.00),
+(6, 6, 11, 12, 'livré', '2025-12-10', 70000.00);
 VALUES
 ('Ford', 'Transit', 55.00),
 ('Nissan', 'Urvan', 48.00),
